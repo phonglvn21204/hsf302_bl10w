@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>📄 Quản lý Blog</title>
+	<link rel="stylesheet" th:href="@{/css/staff.css}">
+</head>
+<body>
+<div class="staff-container">
+	<!-- Sidebar -->
+	<div th:replace="fragments/sidebar_staff :: staffSidebar"></div>
+
+	<!-- Nội dung chính -->
+	<div class="main-content">
+		<h2>📝 Danh sách blog</h2>
+		<!-- Nút tạo blog mới -->
+		<a th:href="@{/staff/blogs/create}" class="btn btn-primary" style="margin-bottom: 20px;">➕ Tạo bài blog mới</a>
+		<div class="blog-list">
+			<div class="blog-item" th:each="blog : ${blogs}">
+				<img th:src="@{${blog.imageUrl}}" alt="Ảnh blog" style="width:100%; max-width:300px; height:auto;"/>
+				<h3 th:text="${blog.title}"></h3>
+				<p th:text="${#strings.abbreviate(blog.content, 100)}"></p>
+				<p>Trạng thái: <span th:text="${blog.status}"></span></p>
+
+				<!-- Nút xóa -->
+				<form th:action="@{'/staff/blogs/delete/' + ${blog.id}}" method="post" style="display:inline;">
+					<button type="submit" class="btn btn-danger">🗑️ Xóa</button>
+				</form>
+
+				<!-- Cập nhật trạng thái -->
+				<form th:action="@{/staff/blogs/update-status}" method="post" style="display:inline;">
+					<input type="hidden" name="id" th:value="${blog.id}" />
+					<select name="status">
+						<option value="draft" th:selected="${blog.status == 'draft'}">Draft</option>
+						<option value="published" th:selected="${blog.status == 'published'}">Published</option>
+						<option value="hidden" th:selected="${blog.status == 'hidden'}">Hidden</option>
+					</select>
+					<button type="submit">✅ Cập nhật</button>
+				</form>
+
+				<a th:href="@{/staff/blogs/edit/{id}(id=${blog.id})}">✏️ Chỉnh sửa</a>
+			</div>
+		</div>
+	</div>
+</div>
+</body>
+</html>

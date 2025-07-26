@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="UTF-8">
+	<title>Trang tư vấn tuyển sinh</title>
+	<link rel="stylesheet" th:href="@{/css/guest_home.css}">
+	<link rel="stylesheet" th:href="@{/css/chatbot.css}">
+	<script th:src="@{/js/chatbot.js}" defer></script>
+</head>
+<body>
+<div class="top-bar">
+	<h1>Tư vấn tuyển sinh</h1>
+	<p>Vì một tương lai tươi sáng của thế hệ trẻ</p>
+
+	<div th:if="${session.currentUser != null}">
+		<span th:text="'👋 Xin chào, ' + ${session.currentUser.fullName}"></span> |
+		<a th:href="@{/logout}">🔓 Đăng xuất</a>
+	</div>
+	<div th:unless="${session.currentUser != null}">
+		<a th:href="@{/login}">🔐 Đăng nhập</a>
+	</div>
+</div>
+
+
+<div class="blog-list">
+	<div class="blog-item" th:each="blog : ${blogs}">
+		<img th:src="@{${blog.imageUrl}}" alt="Ảnh blog"/>
+		<h3 th:text="${blog.title}"></h3>
+		<p th:text="${#strings.abbreviate(blog.content, 100)}"></p>
+		<a th:href="@{'/blogs/' + ${blog.id}}">Xem chi tiết</a>
+	</div>
+</div>
+
+<div class="appointment-form">
+	<h2>📆 Gửi yêu cầu tư vấn tuyển sinh</h2>
+	<div th:if="${loginMessage}" class="alert-login">
+		<p th:text="${loginMessage}"></p>
+		<a th:href="@{/login}" class="btn-login">👉 Đăng nhập ngay</a>
+	</div>
+
+	<form th:action="@{/appointments/submit}" method="post">
+		<label for="school">Trường đại học:</label>
+		<select id="school" name="schoolId" required>
+			<option th:each="school : ${schools}" th:value="${school.id}" th:text="${school.name}"></option>
+		</select>
+
+		<label for="major">Ngành học:</label>
+		<select id="major" name="majorId" required>
+			<option value="">-- Chọn ngành --</option>
+		</select>
+		<button type="submit">Gửi yêu cầu</button>
+	</form>
+	<a href="/scholarships/finder" class="btn btn-info">
+		<i class="fas fa-graduation-cap"></i> Tìm học bổng
+	</a>
+</div>
+<div th:replace="~{fragments/chatbot :: chatbot}"></div>
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    document.addEventListener("DOMContentLoaded", function () {
+        const schoolSelect = document.getElementById("school");
+        const majorSelect = document.getElementById("major");
+
+        function loadMajors(schoolId) {
+            fetch('/majors/by-school/' + schoolId)
+                .then(response => response.json())
+                .then(data => {
+                    majorSelect.innerHTML = "";
+                    data.forEach(major => {
+                        const option = document.createElement("option");
+                        option.value = major.id;
+                        option.textContent = major.name;
+                        majorSelect.appendChild(option);
+                    });
+                })
+                .catch(error => {
+                    console.error("Lỗi khi tải majors:", error);
+                    majorSelect.innerHTML = `<option value="">Không thể tải ngành</option>`;
+                });
+        }
+
+        schoolSelect.addEventListener("change", function () {
+            const selectedSchoolId = this.value;
+            loadMajors(selectedSchoolId);
+        });
+
+        if (schoolSelect.value) {
+            loadMajors(schoolSelect.value);
+        }
+    });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,110 @@
+body {
+    margin: 0;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: #f4f8fb;
+    color: #223161;
+    min-height: 100vh;
+}
+
+.form-container {
+    max-width: 360px;
+    margin: 56px auto 0 auto;
+    padding: 32px 28px 24px 28px;
+    background: #fff;
+    border-radius: 13px;
+    box-shadow: 0 4px 18px rgba(36,86,163,0.12), 0 1.5px 7px rgba(44,62,80,0.05);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.form-container h2 {
+    margin-top: 0;
+    color: #2456a3;
+    font-weight: 800;
+    margin-bottom: 16px;
+    font-size: 1.48rem;
+    letter-spacing: 0.03em;
+    text-align: center;
+}
+
+.form-container label {
+    display: block;
+    margin: 14px 0 6px 2px;
+    color: #295498;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+}
+
+.form-container input[type="text"],
+.form-container input[type="email"],
+.form-container input[type="password"] {
+    width: 100%;
+    padding: 12px 12px;
+    border-radius: 7px;
+    border: 1.1px solid #b3b9cb;
+    font-size: 1rem;
+    margin-bottom: 4px;
+    background: #f8fafb;
+    transition: border 0.13s, box-shadow 0.12s;
+    outline: none;
+    box-sizing: border-box;
+}
+.form-container input:focus {
+    border-color: #2456a3;
+    box-shadow: 0 0 0 2px #2456a328;
+}
+
+.form-container button[type="submit"] {
+    width: 100%;
+    background: #2456a3;
+    color: #fff;
+    padding: 12px 0;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.08rem;
+    font-weight: bold;
+    margin-top: 22px;
+    transition: background 0.14s, box-shadow 0.14s;
+    cursor: pointer;
+    letter-spacing: 0.03em;
+    box-shadow: 0 1px 7px rgba(36,86,163,0.09);
+}
+.form-container button[type="submit"]:hover {
+    background: #3575c8;
+}
+
+.form-container .error-message {
+    background: #fff3ef;
+    color: #c0392b;
+    border: 1px solid #ffb7a2;
+    border-radius: 6px;
+    padding: 8px 13px;
+    margin: 18px 0 0 0;
+    font-size: 0.99rem;
+    text-align: center;
+}
+
+.form-container p {
+    margin-top: 22px;
+    font-size: 1.01rem;
+    text-align: center;
+}
+
+.form-container a {
+    color: #2456a3;
+    text-decoration: underline;
+    font-weight: 600;
+    transition: color 0.13s;
+}
+.form-container a:hover {
+    color: #3575c8;
+}
+
+@media (max-width: 480px) {
+    .form-container {
+        max-width: 98vw;
+        padding: 18px 4vw 18px 4vw;
+    }
+    .form-container h2 { font-size: 1.09rem; }
+}

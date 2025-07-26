@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Admin Dashboard</title>
+	<link rel="stylesheet" th:href="@{/css/admin.css}">
+</head>
+<body>
+<div class="admin-container">
+	<!-- Sidebar -->
+	<div class="sidebar">
+		<h2 class="sidebar-title">Admin Panel</h2>
+		<ul class="sidebar-menu">
+			<li><a th:href="@{/admin/users}">User</a></li>
+			<li><a th:href="@{/admin/universities}">University</a></li>
+			<li><a th:href="@{/admin/majors}">Majors</a></li>
+			<li><a th:href="@{/logout}">Logout</a></li>
+		</ul>
+	</div>
+
+	<!-- Main content -->
+	<div class="main-content">
+		<h2>Danh sách trường đại học</h2>
+		<table>
+			<thead>
+			<tr>
+				<th>ID</th>
+				<th>Tên</th>
+				<th>Mô tả</th>
+				<th>Logo</th>
+				<th>Website</th>
+			</tr>
+			</thead>
+			<tbody>
+			<tr th:each="school : ${schools}">
+				<td th:text="${school.id}">1</td>
+				<td th:text="${school.name}">FPT</td>
+				<td th:text="${school.description}">Mô tả</td>
+				<td><img th:src="@{${school.logoUrl}}" width="100"/></td>
+				<td><a th:href="${school.websiteUrl}" th:text="${school.websiteUrl}">Trang chủ</a></td>
+			</tr>
+			</tbody>
+		</table>
+
+		<h2>Danh sách ngành học</h2>
+		<table>
+			<thead>
+			<tr>
+				<th>ID</th>
+				<th>Tên</th>
+				<th>Mô tả</th>
+				<th>Trường</th>
+			</tr>
+			</thead>
+			<tbody>
+			<tr th:each="major : ${majors}">
+				<td th:text="${major.id}">1</td>
+				<td th:text="${major.name}">FPT</td>
+				<td th:text="${major.description}">Mô tả</td>
+				<td th:text="${major.school.name}">Trường</td>
+			</tr>
+			</tbody>
+		</table>
+
+		<h2>Danh sách người dùng</h2>
+		<table>
+			<thead>
+			<tr>
+				<th>ID</th>
+				<th>Email</th>
+				<th>Password Hash</th>
+				<th>Full Name</th>
+				<th>Status</th>
+				<th>Phone</th>
+				<th>Role</th>
+				<th>Created At</th>
+				<th>Action</th>
+			</tr>
+			</thead>
+			<tbody>
+			<tr th:each="user : ${users}">
+				<td th:text="${user.id}">1</td>
+				<td th:text="${user.email}">FPT</td>
+				<td th:text="${user.passwordHash}">Mô tả</td>
+				<td th:text="${user.fullName}">Trường</td>
+				<td th:text="${user.status}">Trường</td>
+				<td th:text="${user.phone}">Trường</td>
+				<td th:text="${user.role}">Trường</td>
+				<td th:text="${#temporals.format(user.createdAt, 'dd/MM/yyyy HH:mm')}">Ngày tạo</td>
+				<td>
+					<a th:href="@{'/updateUser/' + ${user.id}}">
+						<input type="submit" value="Update">
+					</a>
+				</td>
+			</tr>
+			</tbody>
+		</table>
+	</div>
+</div>
+</body>
+</html>

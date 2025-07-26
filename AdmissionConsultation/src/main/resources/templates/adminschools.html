@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="UTF-8">
+	<title>University Management</title>
+	<link rel="stylesheet" th:href="@{/css/admin.css}">
+</head>
+<body>
+<div class="admin-container">
+	<div th:replace="fragments/sidebar :: adminSidebar"></div>
+	<div class="main-content">
+		<h2>Danh sách trường đại học</h2>
+
+		<!-- CREATE BUTTON -->
+		<button type="button" class="admin-btn add" id="openCreateSchoolBtn" style="margin-bottom: 18px;">Thêm trường mới</button>
+
+		<table class="admin-table">
+			<thead>
+			<tr>
+				<th>ID</th>
+				<th>Tên</th>
+				<th>Mô tả</th>
+				<th>Logo</th>
+				<th>Website</th>
+				<th>Thao tác</th>
+			</tr>
+			</thead>
+			<tbody>
+			<tr th:each="school : ${schools}">
+				<td th:text="${school.id}"></td>
+				<td th:text="${school.name}"></td>
+				<td th:text="${school.description}"></td>
+				<td>
+					<img th:src="${school.logoUrl}" th:alt="${school.name}" style="max-width:100px; max-height:50px;" />
+				</td>
+				<td>
+					<a th:href="${school.websiteUrl}" th:text="${school.websiteUrl}" target="_blank"></a>
+				</td>
+				<td>
+					<button type="button" class="edit-btn"
+							th:attr="data-id=${school.id},data-name=${school.name},data-description=${school.description},data-logourl=${school.logoUrl},data-websiteurl=${school.websiteUrl}">
+						Sửa
+					</button>
+					<button type="button" class="delete-btn"
+							th:attr="data-id=${school.id}">
+						Xóa
+					</button>
+				</td>
+			</tr>
+			</tbody>
+		</table>
+	</div>
+</div>
+
+<!-- Create School Modal -->
+<div id="createSchoolModal" class="modal">
+	<div class="modal-content">
+		<span class="close" id="closeCreateSchoolModal">&times;</span>
+		<h3>Thêm trường mới</h3>
+		<form id="createSchoolForm" th:action="@{/admin/schools/create}" method="post">
+			<input type="text" name="name" required placeholder="Tên trường" />
+			<input type="text" name="description" placeholder="Mô tả" />
+			<input type="text" name="logoUrl" placeholder="Logo URL" />
+			<input type="text" name="websiteUrl" placeholder="Website" />
+			<div class="modal-actions">
+				<button type="submit" class="admin-btn add">Tạo mới</button>
+				<button type="button" id="cancelCreateSchoolBtn" class="admin-btn" style="background:#e2e2e2;color:#444;">Hủy</button>
+			</div>
+		</form>
+	</div>
+</div>
+
+<!-- Edit School Modal -->
+<div id="editSchoolModal" class="modal">
+	<div class="modal-content">
+		<span class="close" id="closeEditSchoolModal">&times;</span>
+		<h3>Cập nhật trường đại học</h3>
+		<form id="editSchoolForm" th:action="@{/admin/schools/update}" method="post">
+			<input type="hidden" name="id" id="editSchoolId"/>
+			<input type="text" name="name" id="editSchoolName" required placeholder="Tên trường"/>
+			<input type="text" name="description" id="editSchoolDescription" placeholder="Mô tả"/>
+			<input type="text" name="logoUrl" id="editSchoolLogoUrl" placeholder="Logo URL"/>
+			<input type="text" name="websiteUrl" id="editSchoolWebsiteUrl" placeholder="Website"/>
+			<div class="modal-actions">
+				<button type="button" id="updateSchoolBtn" class="admin-btn add">Cập nhật</button>
+				<button type="button" id="cancelEditSchoolBtn" class="admin-btn" style="background:#e2e2e2;color:#444;">Hủy</button>
+			</div>
+		</form>
+	</div>
+</div>
+
+<!-- Confirm Modal -->
+<div id="confirmSchoolModal" class="modal">
+	<div class="modal-content confirm-modal-content">
+		<h3 id="confirmSchoolModalTitle">Bạn chắc chắn?</h3>
+		<p id="confirmSchoolModalMessage"></p>
+		<div class="modal-actions">
+			<!-- Tránh dùng class delete-btn ở đây -->
+			<button type="button" id="confirmSchoolYesBtn" class="confirm-delete-btn">Đồng ý</button>
+			<button type="button" id="confirmSchoolNoBtn" class="admin-btn" style="background:#e2e2e2;color:#444;">Hủy</button>
+		</div>
+	</div>
+</div>
+
+<script>
+	function showModal(modal) { modal.classList.add('show'); }
+	function hideModal(modal) { modal.classList.remove('show'); }
+
+	// CREATE MODAL
+	const createSchoolModal = document.getElementById('createSchoolModal');
+	const openCreateSchoolBtn = document.getElementById('openCreateSchoolBtn');
+	const closeCreateSchoolModalBtn = document.getElementById('closeCreateSchoolModal');
+	const cancelCreateSchoolBtn = document.getElementById('cancelCreateSchoolBtn');
+
+	openCreateSchoolBtn.onclick = () => showModal(createSchoolModal);
+	closeCreateSchoolModalBtn.onclick = () => hideModal(createSchoolModal);
+	cancelCreateSchoolBtn.onclick = () => hideModal(createSchoolModal);
+
+	// EDIT MODAL
+	const editSchoolModal = document.getElementById('editSchoolModal');
+	const closeEditSchoolModalBtn = document.getElementById('closeEditSchoolModal');
+	const cancelEditSchoolBtn = document.getElementById('cancelEditSchoolBtn');
+	const editSchoolForm = document.getElementById('editSchoolForm');
+
+	document.querySelectorAll('.edit-btn').forEach(btn => {
+		btn.addEventListener('click', function () {
+			document.getElementById('editSchoolId').value = btn.getAttribute('data-id');
+			document.getElementById('editSchoolName').value = btn.getAttribute('data-name');
+			document.getElementById('editSchoolDescription').value = btn.getAttribute('data-description');
+			document.getElementById('editSchoolLogoUrl').value = btn.getAttribute('data-logourl');
+			document.getElementById('editSchoolWebsiteUrl').value = btn.getAttribute('data-websiteurl');
+			showModal(editSchoolModal);
+		});
+	});
+
+	closeEditSchoolModalBtn.onclick = () => hideModal(editSchoolModal);
+	cancelEditSchoolBtn.onclick = () => hideModal(editSchoolModal);
+
+	document.getElementById('updateSchoolBtn').onclick = function() {
+		showConfirmSchoolModal("Xác nhận cập nhật", "Bạn có chắc muốn cập nhật trường đại học này?", function () {
+			editSchoolForm.submit();
+		});
+	};
+
+	// DELETE MODAL
+	document.querySelectorAll('.delete-btn').forEach(btn => {
+		btn.addEventListener('click', function () {
+			const schoolId = btn.getAttribute('data-id');
+			showConfirmSchoolModal("Xác nhận xóa", "Bạn có chắc muốn xóa trường đại học này?", function () {
+				const form = document.createElement('form');
+				form.method = "post";
+				form.action = "/admin/schools/delete/" + schoolId;
+				document.body.appendChild(form);
+				form.submit();
+			});
+		});
+	});
+
+	// CONFIRM MODAL LOGIC
+	const confirmSchoolModal = document.getElementById('confirmSchoolModal');
+	const confirmSchoolYesBtn = document.getElementById('confirmSchoolYesBtn');
+	const confirmSchoolNoBtn = document.getElementById('confirmSchoolNoBtn');
+	let confirmSchoolCallback = null;
+
+	function showConfirmSchoolModal(title, message, callback) {
+		document.getElementById('confirmSchoolModalTitle').innerText = title;
+		document.getElementById('confirmSchoolModalMessage').innerText = message;
+		showModal(confirmSchoolModal);
+		confirmSchoolCallback = callback;
+	}
+
+	confirmSchoolYesBtn.onclick = function () {
+		hideModal(confirmSchoolModal);
+		if (typeof confirmSchoolCallback === "function") confirmSchoolCallback();
+	};
+	confirmSchoolNoBtn.onclick = () => hideModal(confirmSchoolModal);
+
+	[createSchoolModal, editSchoolModal, confirmSchoolModal].forEach(modal => {
+		modal.addEventListener('click', function (event) {
+			if (event.target === modal) hideModal(modal);
+		});
+	});
+
+	window.addEventListener('keydown', function (event) {
+		if (event.key === "Escape") {
+			hideModal(createSchoolModal);
+			hideModal(editSchoolModal);
+			hideModal(confirmSchoolModal);
+		}
+	});
+</script>
+</body>
+</html>

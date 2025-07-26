@@ -1,0 +1,223 @@
+body {
+    margin: 0;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: #f4f8fb;
+    color: #18325e;
+    letter-spacing: 0.01em;
+}
+
+/* Top Bar */
+.top-bar {
+    background: #2456a3;
+    color: #fff;
+    padding: 28px 0 16px 0;
+    text-align: center;
+    border-bottom-left-radius: 16px;
+    border-bottom-right-radius: 16px;
+    box-shadow: 0 2px 10px rgba(36,86,163,0.07);
+    margin-bottom: 36px;
+    position: relative;
+}
+.top-bar h1 {
+    margin: 0 0 10px 0;
+    font-size: 2.1rem;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+}
+.top-bar p {
+    margin: 0 auto 16px auto;
+    max-width: 600px;
+    font-size: 1.14rem;
+    color: #eaf1fb;
+    opacity: 0.98;
+    font-weight: 500;
+}
+.top-bar a, .top-bar span {
+    color: #fff;
+    font-weight: 500;
+    font-size: 1.04rem;
+    text-decoration: none;
+    margin-left: 4px;
+    margin-right: 4px;
+    transition: color 0.17s;
+}
+.top-bar a:hover {
+    color: #ffe17b;
+    text-decoration: underline;
+}
+.btn-login {
+    display: inline-block;
+    background: #fff;
+    color: #2456a3;
+    padding: 4px 18px;
+    border-radius: 6px;
+    font-weight: bold;
+    margin-top: 6px;
+    text-decoration: none;
+    border: none;
+    font-size: 1rem;
+    transition: background 0.16s, color 0.16s;
+}
+.btn-login:hover {
+    background: #2456a3;
+    color: #fff;
+}
+
+/* Blog List */
+.blog-list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 30px;
+    margin: 38px auto 56px auto;
+    max-width: 1200px;
+}
+.blog-item {
+    background: #fff;
+    border-radius: 13px;
+    box-shadow: 0 4px 18px rgba(36,86,163,0.11), 0 1.5px 7px rgba(44,62,80,0.05);
+    width: 335px;
+    min-height: 300px;
+    padding: 24px 20px 20px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: box-shadow 0.18s, transform 0.16s;
+    position: relative;
+    border-top: 4px solid #2456a3;
+}
+.blog-item:hover {
+    box-shadow: 0 14px 34px rgba(36,86,163,0.14), 0 2px 10px rgba(44,62,80,0.09);
+    transform: translateY(-5px) scale(1.025);
+    border-top: 4px solid #3575c8;
+}
+.blog-item img {
+    width: 100%;
+    max-height: 140px;
+    object-fit: cover;
+    border-radius: 9px;
+    margin-bottom: 15px;
+}
+.blog-item h3 {
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: #2456a3;
+    margin: 0 0 10px 0;
+    text-align: center;
+    letter-spacing: 0.01em;
+}
+.blog-item p {
+    font-size: 1rem;
+    color: #374163;
+    margin: 0 0 14px 0;
+    text-align: center;
+    min-height: 46px;
+    line-height: 1.55;
+}
+.blog-item a {
+    display: inline-block;
+    color: #2456a3;
+    font-weight: 600;
+    text-decoration: none;
+    margin-top: auto;
+    border-radius: 6px;
+    padding: 7px 18px;
+    background: #e8f0ff;
+    transition: background 0.14s, color 0.14s, box-shadow 0.13s;
+    box-shadow: 0 1px 6px rgba(36,86,163,0.09);
+    letter-spacing: 0.03em;
+    font-size: 1.02rem;
+}
+.blog-item a:hover {
+    background: #2456a3;
+    color: #fff;
+    box-shadow: 0 4px 18px rgba(36,86,163,0.14);
+}
+
+/* Appointment Form */
+.appointment-form {
+    max-width: 440px;
+    background: #fff;
+    margin: 28px auto 50px auto;
+    padding: 32px 24px 22px 24px;
+    border-radius: 13px;
+    box-shadow: 0 4px 22px rgba(36,86,163,0.08);
+    border-top: 5px solid #2456a3;
+}
+.appointment-form h2 {
+    text-align: center;
+    margin: 0 0 22px 0;
+    color: #2456a3;
+    font-size: 1.27rem;
+    letter-spacing: 0.03em;
+}
+.appointment-form label {
+    font-weight: 600;
+    color: #295498;
+    margin-top: 11px;
+    margin-bottom: 3px;
+    display: block;
+    letter-spacing: 0.01em;
+}
+.appointment-form input[type="text"], .appointment-form select {
+    width: 100%;
+    padding: 13px 13px;
+    border-radius: 7px;
+    border: 1.1px solid #b3b9cb;
+    font-size: 1rem;
+    margin-bottom: 14px;
+    background: #f8fafb;
+    transition: border 0.13s, box-shadow 0.12s;
+    outline: none;
+    box-sizing: border-box;
+}
+.appointment-form input[type="text"]:focus,
+.appointment-form select:focus {
+    border-color: #2456a3;
+    box-shadow: 0 0 0 2px #2456a328;
+}
+.appointment-form button[type="submit"] {
+    width: 100%;
+    background: #2456a3;
+    color: #fff;
+    padding: 13px 0;
+    border: none;
+    border-radius: 7px;
+    font-size: 1.06rem;
+    font-weight: bold;
+    transition: background 0.14s, box-shadow 0.14s;
+    cursor: pointer;
+    margin-top: 8px;
+    letter-spacing: 0.03em;
+    box-shadow: 0 1px 7px rgba(36,86,163,0.09);
+}
+.appointment-form button[type="submit"]:hover {
+    background: #3575c8;
+    box-shadow: 0 5px 20px rgba(36,86,163,0.13);
+}
+
+/* Alert login in form */
+.alert-login {
+    background: #fff5d2;
+    color: #b97a00;
+    border: 1px solid #ffecb3;
+    border-radius: 7px;
+    padding: 11px 16px 8px 16px;
+    margin-bottom: 12px;
+    text-align: center;
+    font-size: 1rem;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+    .blog-list { flex-direction: column; align-items: center; gap: 20px; }
+    .blog-item { width: 97%; }
+    .appointment-form { max-width: 98vw; padding: 18px 4vw 18px 4vw; }
+    .top-bar { border-radius: 0; padding: 20px 0 10px 0; }
+}
+
+@media (max-width: 500px) {
+    .blog-list { margin: 12px auto 24px auto; gap: 10px; }
+    .blog-item { padding: 12px 5vw 14px 5vw; min-width: 0; }
+    .appointment-form { padding: 10px 2vw 10px 2vw; }
+}

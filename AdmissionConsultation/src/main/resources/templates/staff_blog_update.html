@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head>
+	<meta charset="UTF-8">
+	<title>Cập nhật bài blog</title>
+	<link rel="stylesheet" th:href="@{/css/staff.css}">
+	<script src="https://cdn.tiny.cloud/1/1vd6u8cixsilt5z7eywpghd45413duf2ojt4zszqw67dbdy4/tinymce/6/tinymce.min.js"
+	        referrerpolicy="origin"></script>
+	<script>
+        tinymce.init({
+            selector: '#content',
+            height: 600,
+            plugins: 'preview importcss searchreplace autolink autosave save directionality code visualblocks visualchars fullscreen image link media template codesample table charmap pagebreak nonbreaking anchor insertdatetime advlist lists wordcount help charmap quickbars emoticons',
+            toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | forecolor backcolor | alignleft aligncenter alignright alignjustify | bullist numlist checklist | outdent indent | link image media table | emoticons charmap | removeformat | preview code fullscreen help',
+            menubar: 'file edit view insert format tools table help',
+            images_upload_handler: function (blobInfo, success, failure) {
+                const formData = new FormData();
+                formData.append('file', blobInfo.blob(), blobInfo.filename());
+
+                fetch('/staff/blogs/upload-image', {
+                    method: 'POST',
+                    body: formData
+                })
+                    .then(res => {
+                        if (!res.ok) throw new Error("Server trả lỗi " + res.status);
+                        return res.json();
+                    })
+                    .then(data => {
+                        if (!data || typeof data.location !== 'string') {
+                            throw new Error("Phản hồi không hợp lệ: " + JSON.stringify(data));
+                        }
+
+                        const imageUrl = window.location.origin + data.location;
+                        console.log("✅ Upload thành công:", imageUrl);
+
+                        success(imageUrl); // truyền đúng URL cho TinyMCE
+                    })
+                    .catch(err => {
+                        console.error("❌ Upload lỗi:", err);
+                        failure("Upload ảnh thất bại: " + err.message);
+                    });
+            }
+        });
+	</script>
+</head>
+<body>
+<div class="staff-container">
+	<div th:replace="fragments/sidebar_staff :: staffSidebar"></div>
+
+	<div class="main-content">
+		<h2>✏️ Cập nhật bài blog</h2>
+
+		<form th:action="@{'/staff/blogs/update/' + ${blogPost.id}}" method="post" enctype="multipart/form-data"
+		      class="form-create-blog">
+			<label for="title">Tiêu đề bài viết:</label>
+			<input type="text" id="title" name="title" th:value="${blogPost.title}" required>
+
+			<label for="imageFile">Ảnh đại diện mới:</label>
+			<input type="file" id="imageFile" name="imageFile" accept="image/*">
+
+
+			<div th:if="${blogPost.imageUrl}">
+				<p>Ảnh hiện tại:</p>
+				<img th:src="@{${blogPost.imageUrl}}" alt="Ảnh hiện tại" class="blog-image-preview">
+			</div>
+
+			<label for="content">Nội dung bài viết:</label>
+			<textarea id="content" name="content" rows="10" th:utext="${blogPost.content}" required></textarea>
+
+			<label for="status">Trạng thái:</label>
+			<select id="status" name="status">
+				<option value="draft" th:selected="${blogPost.status == 'draft'}">Draft</option>
+				<option value="hidden" th:selected="${blogPost.status == 'hidden'}">Hidden</option>
+				<option value="published" th:selected="${blogPost.status == 'published'}">Published</option>
+			</select>
+
+			<button type="submit">💾 Lưu thay đổi</button>
+		</form>
+	</div>
+</div>
+</body>
+</html>

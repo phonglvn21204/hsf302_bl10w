@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Quản Lý Học Bổng</title>
+    <link rel="stylesheet" th:href="@{/css/admin.css}">
+</head>
+<body>
+<div class="admin-container">
+    <div th:replace="fragments/sidebar :: adminSidebar"></div>
+    <div class="main-content">
+        <h2>Danh Sách Học Bổng</h2>
+        <div th:if="${error}" class="error" th:text="${error}"></div>
+
+        <button type="button" class="admin-btn add" id="showCreateScholarshipBtn" style="margin-bottom: 18px;">Thêm Học Bổng</button>
+
+        <table class="admin-table">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Tiêu đề</th>
+                <th>Số tiền</th>
+                <th>Loại</th>
+                <th>Hạn nộp</th>
+                <th>GPA tối thiểu</th>
+                <th>Trường</th>
+                <th>Ngành</th>
+                <th>Trạng thái</th>
+                <th>Thao tác</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="scholarship : ${scholarships}">
+                <td th:text="${scholarship.id}"></td>
+                <td th:text="${scholarship.title}"></td>
+                <td th:text="${#numbers.formatDecimal(scholarship.amount, 0, 'COMMA', 0, 'POINT')} + ' VND'"></td>
+                <td th:text="${scholarship.type}"></td>
+                <td th:text="${scholarship.applicationDeadline != null ? #temporals.format(scholarship.applicationDeadline, 'dd/MM/yyyy') : 'N/A'}"></td>
+                <td th:text="${scholarship.minGpa ?: 'N/A'}"></td>
+                <td th:text="${scholarship.school?.name ?: 'N/A'}"></td>
+                <td th:text="${scholarship.major?.name ?: 'Tất cả ngành'}"></td>
+                <td th:text="${scholarship.status}"></td>
+                <td>
+                    <button type="button" class="edit-btn"
+                            th:attr="
+                                data-id=${scholarship.id},
+                                data-title=${scholarship.title},
+                                data-description=${scholarship.description},
+                                data-amount=${scholarship.amount},
+                                data-type=${scholarship.type},
+                                data-deadline=${scholarship.applicationDeadline},
+                                data-mingpa=${scholarship.minGpa},
+                                data-requirements=${scholarship.requirements},
+                                data-status=${scholarship.status},
+                                data-school=${scholarship.school?.id},
+                                data-major=${scholarship.major?.id}
+                            ">
+                        Sửa
+                    </button>
+                    <button type="button" class="delete-btn" th:attr="data-id=${scholarship.id}">
+                        Xóa
+                    </button>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+        <!-- Form Tạo Học Bổng -->
+        <div id="createScholarshipModal" class="modal">
+            <div class="modal-content">
+                <span class="close" id="closeCreateModal">&times;</span>
+                <h3>Thêm Học Bổng</h3>
+                <form id="createScholarshipForm" th:action="@{/admin/scholarships/create}" method="post">
+                    <div class="form-group">
+                        <label for="createTitle">Tiêu đề:</label>
+                        <input type="text" name="title" id="createTitle" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="createDescription">Mô tả:</label>
+                        <textarea name="description" id="createDescription" rows="3"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="createAmount">Số tiền:</label>
+                        <input type="number" name="amount" id="createAmount" required min="0" step="0.01" />
+                    </div>
+                    <div class="form-group">
+                        <label for="createType">Loại học bổng:</label>
+                        <select name="type" id="createType">
+                            <option value="partial">Một phần</option>
+                            <option value="full">Toàn phần</option>
+                            <option value="monthly">Hàng tháng</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="createDeadline">Hạn nộp đơn:</label>
+                        <input type="date" name="applicationDeadline" id="createDeadline" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="createMinGpa">GPA tối thiểu:</label>
+                        <input type="number" step="0.1" name="minGpa" id="createMinGpa" min="0" max="4" />
+                    </div>
+                    <div class="form-group">
+                        <label for="createRequirements">Yêu cầu:</label>
+                        <textarea name="requirements" id="createRequirements" rows="3"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="createSchool">Trường:</label>
+                        <select name="schoolId" id="createSchool" required>
+                            <option value="">-- Chọn trường --</option>
+                            <option th:each="school : ${schools}" th:value="${school.id}" th:text="${school.name}"></option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="createMajor">Ngành (tùy chọn):</label>
+                        <select name="majorId" id="createMajor">
+                            <option value="">-- Tất cả ngành --</option>
+                            <option th:each="major : ${majors}" th:value="${major.id}" th:text="${major.name}"></option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="createStatus">Trạng thái:</label>
+                        <select name="status" id="createStatus">
+                            <option value="active">Hoạt động</option>
+                            <option value="draft">Nháp</option>
+                            <option value="expired">Hết hạn</option>
+                        </select>
+                    </div>
+                    <div class="modal-actions">
+                        <button type="submit" class="admin-btn add">Thêm Học Bổng</button>
+                        <button type="button" id="cancelCreateBtn" class="admin-btn" style="background:#e2e2e2;color:#444;">Hủy</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Form Sửa Học Bổng -->
+        <div id="editScholarshipModal" class="modal">
+            <div class="modal-content">
+                <span class="close" id="closeEditModal">&times;</span>
+                <h3>Cập Nhật Học Bổng</h3>
+                <form id="editScholarshipForm" th:action="@{/admin/scholarships/update}" method="post">
+                    <input type="hidden" name="id" id="editId"/>
+                    <div class="form-group">
+                        <label for="editTitle">Tiêu đề:</label>
+                        <input type="text" name="title" id="editTitle" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="editDescription">Mô tả:</label>
+                        <textarea name="description" id="editDescription" rows="3"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="editAmount">Số tiền:</label>
+                        <input type="number" name="amount" id="editAmount" required min="0" step="0.01" />
+                    </div>
+                    <div class="form-group">
+                        <label for="editType">Loại học bổng:</label>
+                        <select name="type" id="editType">
+                            <option value="partial">Một phần</option>
+                            <option value="full">Toàn phần</option>
+                            <option value="monthly">Hàng tháng</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="editDeadline">Hạn nộp đơn:</label>
+                        <input type="date" name="applicationDeadline" id="editDeadline" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="editMinGpa">GPA tối thiểu:</label>
+                        <input type="number" step="0.1" name="minGpa" id="editMinGpa" min="0" max="4" />
+                    </div>
+                    <div class="form-group">
+                        <label for="editRequirements">Yêu cầu:</label>
+                        <textarea name="requirements" id="editRequirements" rows="3"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="editSchool">Trường:</label>
+                        <select name="schoolId" id="editSchool" required>
+                            <option value="">-- Chọn trường --</option>
+                            <option th:each="school : ${schools}" th:value="${school.id}" th:text="${school.name}"></option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="editMajor">Ngành (tùy chọn):</label>
+                        <select name="majorId" id="editMajor">
+                            <option value="">-- Tất cả ngành --</option>
+                            <option th:each="major : ${majors}" th:value="${major.id}" th:text="${major.name}"></option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="editStatus">Trạng thái:</label>
+                        <select name="status" id="editStatus">
+                            <option value="active">Hoạt động</option>
+                            <option value="draft">Nháp</option>
+                            <option value="expired">Hết hạn</option>
+                        </select>
+                    </div>
+                    <div class="modal-actions">
+                        <button type="button" id="updateScholarshipBtn" class="admin-btn add">Cập Nhật</button>
+                        <button type="button" id="cancelEditBtn" class="admin-btn" style="background:#e2e2e2;color:#444;">Hủy</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Confirm Modal -->
+        <div id="confirmModal" class="modal">
+            <div class="modal-content confirm-modal-content">
+                <h3 id="confirmTitle">Xác nhận</h3>
+                <p id="confirmMessage">Bạn có chắc chắn muốn thực hiện thao tác này?</p>
+                <div class="modal-actions">
+                    <button type="button" id="confirmYes" class="confirm-delete-btn">Đồng ý</button>
+                    <button type="button" id="confirmNo" class="admin-btn" style="background:#e2e2e2;color:#444;">Hủy</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function showModal(modal) { modal.classList.add('show'); }
+    function hideModal(modal) { modal.classList.remove('show'); }
+
+    // CREATE MODAL
+    const createModal = document.getElementById('createScholarshipModal');
+    const showCreateScholarshipBtn = document.getElementById('showCreateScholarshipBtn');
+    const closeCreateModal = document.getElementById('closeCreateModal');
+    const cancelCreateBtn = document.getElementById('cancelCreateBtn');
+
+    showCreateScholarshipBtn.onclick = () => showModal(createModal);
+    closeCreateModal.onclick = () => hideModal(createModal);
+    cancelCreateBtn.onclick = () => hideModal(createModal);
+
+    // --------- Edit Scholarship Modal logic ----------
+    const editModal = document.getElementById('editScholarshipModal');
+    const closeEditModal = document.getElementById('closeEditModal');
+    const cancelEditBtn = document.getElementById('cancelEditBtn');
+    const editScholarshipForm = document.getElementById('editScholarshipForm');
+    let currentScholarshipId = null;
+
+    document.querySelectorAll('.edit-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const data = btn.dataset;
+
+            document.getElementById('editId').value = data.id || '';
+            document.getElementById('editTitle').value = data.title || '';
+            document.getElementById('editDescription').value = data.description || '';
+            document.getElementById('editAmount').value = data.amount || '';
+            document.getElementById('editType').value = data.type || 'partial';
+            document.getElementById('editDeadline').value = data.deadline || '';
+            document.getElementById('editMinGpa').value = data.mingpa || '';
+            document.getElementById('editRequirements').value = data.requirements || '';
+            document.getElementById('editStatus').value = data.status || 'active';
+            document.getElementById('editSchool').value = data.school || '';
+            document.getElementById('editMajor').value = data.major || '';
+
+            currentScholarshipId = data.id;
+            showModal(editModal);
+        });
+    });
+
+    closeEditModal.onclick = () => hideModal(editModal);
+    cancelEditBtn.onclick = () => hideModal(editModal);
+
+    document.getElementById('updateScholarshipBtn').onclick = function() {
+        showConfirmModal("Xác nhận cập nhật", "Bạn có chắc muốn cập nhật học bổng này?", function () {
+            editScholarshipForm.submit();
+        });
+    };
+
+    // --------- Delete Scholarship Modal logic ----------
+    document.querySelectorAll('.delete-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const scholarshipId = btn.getAttribute('data-id');
+            showConfirmModal("Xác nhận xóa", "Bạn có chắc muốn xóa học bổng này?", function () {
+                const form = document.createElement('form');
+                form.method = "post";
+                form.action = "/admin/scholarships/delete/" + scholarshipId;
+                document.body.appendChild(form);
+                form.submit();
+            });
+        });
+    });
+
+    // --------- Confirm Modal logic ----------
+    const confirmModal = document.getElementById('confirmModal');
+    const confirmYes = document.getElementById('confirmYes');
+    const confirmNo = document.getElementById('confirmNo');
+    let confirmCallback = null;
+
+    function showConfirmModal(title, message, callback) {
+        document.getElementById('confirmTitle').innerText = title;
+        document.getElementById('confirmMessage').innerText = message;
+        showModal(confirmModal);
+        confirmCallback = callback;
+    }
+
+    confirmYes.onclick = function () {
+        hideModal(confirmModal);
+        if (typeof confirmCallback === "function") confirmCallback();
+    };
+    confirmNo.onclick = () => hideModal(confirmModal);
+
+    [createModal, editModal, confirmModal].forEach(modal => {
+        modal.addEventListener('click', function (event) {
+            if (event.target === modal) hideModal(modal);
+        });
+    });
+
+    window.addEventListener('keydown', function (event) {
+        if (event.key === "Escape") {
+            hideModal(createModal);
+            hideModal(editModal);
+            hideModal(confirmModal);
+        }
+    });
+
+    // Set minimum date for deadline inputs
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('createDeadline').min = today;
+    document.getElementById('editDeadline').min = today;
+</script>
+</body>
+</html>

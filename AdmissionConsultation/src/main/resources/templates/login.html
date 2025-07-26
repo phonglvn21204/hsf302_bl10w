@@ -1,0 +1,19 @@
+<link rel="stylesheet" th:href="@{/css/login.css}">
+<body>
+<div class="form-container">
+    <h2>Đăng nhập</h2>
+    <form th:action="@{/login}" th:object="${loginRequest}" method="post">
+        <label>Email:</label>
+        <input type="text" th:field="*{email}" />
+
+        <label>Mật khẩu:</label>
+        <input type="password" th:field="*{password}" />
+
+        <button type="submit">Đăng nhập</button>
+    </form>
+    <div th:if="${error}" class="error-message">
+        <p th:text="${error}"></p>
+    </div>
+    <p>Chưa có tài khoản? <a th:href="@{/register}">Đăng ký</a></p>
+</div>
+</body>

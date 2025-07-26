@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="UTF-8">
+	<title>Major Management</title>
+	<link rel="stylesheet" th:href="@{/css/admin.css}">
+</head>
+<body>
+<div class="admin-container">
+	<div th:replace="fragments/sidebar :: adminSidebar"></div>
+	<div class="main-content">
+		<h2>Danh sách ngành học</h2>
+		<!-- CREATE BUTTON -->
+		<button type="button" class="admin-btn add" id="openCreateMajorBtn" style="margin-bottom: 18px;">Thêm ngành mới</button>
+
+		<table class="admin-table">
+			<thead>
+			<tr>
+				<th>ID</th>
+				<th>Tên</th>
+				<th>Mô tả</th>
+				<th>Trường</th>
+				<th>Actions</th>
+			</tr>
+			</thead>
+			<tbody>
+			<tr th:each="major : ${majors}">
+				<td th:text="${major.id}"></td>
+				<td th:text="${major.name}"></td>
+				<td th:text="${major.description}"></td>
+				<td th:text="${major.school.name}"></td>
+				<td>
+					<button type="button" class="edit-btn"
+							th:attr="data-id=${major.id},data-name=${major.name},data-description=${major.description},data-schoolid=${major.school.id}">
+						Sửa
+					</button>
+					<button type="button" class="delete-btn"
+							th:attr="data-id=${major.id}">
+						Xóa
+					</button>
+				</td>
+			</tr>
+			</tbody>
+		</table>
+	</div>
+</div>
+
+<!-- Create Major Modal -->
+<div id="createMajorModal" class="modal">
+	<div class="modal-content">
+		<span class="close" id="closeCreateMajorModal">&times;</span>
+		<h3>Thêm ngành học mới</h3>
+		<form id="createMajorForm" th:action="@{/admin/majors/create}" method="post">
+			<input type="text" name="name" required placeholder="Tên ngành" />
+			<input type="text" name="description" placeholder="Mô tả" />
+			<select name="schoolId" required>
+				<option value="" disabled selected>Chọn trường</option>
+				<option th:each="school : ${schools}" th:value="${school.id}" th:text="${school.name}"></option>
+			</select>
+			<div class="modal-actions">
+				<button type="submit" class="admin-btn add">Tạo mới</button>
+				<button type="button" id="cancelCreateMajorBtn" class="admin-btn" style="background:#e2e2e2;color:#444;">Hủy</button>
+			</div>
+		</form>
+	</div>
+</div>
+
+<!-- Edit Major Modal -->
+<div id="editMajorModal" class="modal">
+	<div class="modal-content">
+		<span class="close" id="closeEditMajorModal">&times;</span>
+		<h3>Cập nhật ngành học</h3>
+		<form id="editMajorForm" th:action="@{/admin/majors/update}" method="post">
+			<input type="hidden" name="id" id="editMajorId"/>
+			<input type="text" name="name" id="editMajorName" required placeholder="Tên ngành"/>
+			<input type="text" name="description" id="editMajorDescription" placeholder="Mô tả"/>
+			<select name="schoolId" id="editMajorSchoolId" required>
+				<option value="" disabled>Chọn trường</option>
+				<option th:each="school : ${schools}"
+						th:value="${school.id}"
+						th:text="${school.name}">
+				</option>
+			</select>
+			<div class="modal-actions">
+				<button type="button" id="updateMajorBtn" class="admin-btn add">Cập nhật</button>
+				<button type="button" id="cancelEditMajorBtn" class="admin-btn" style="background:#e2e2e2;color:#444;">Hủy</button>
+			</div>
+		</form>
+	</div>
+</div>
+
+<!-- Confirm Modal -->
+<div id="confirmMajorModal" class="modal">
+	<div class="modal-content confirm-modal-content">
+		<h3 id="confirmMajorModalTitle">Bạn chắc chắn?</h3>
+		<p id="confirmMajorModalMessage"></p>
+		<div class="modal-actions">
+			<button type="button" id="confirmMajorYesBtn" class="delete-btn">Đồng ý</button>
+			<button type="button" id="confirmMajorNoBtn" class="admin-btn" style="background:#e2e2e2;color:#444;">Hủy</button>
+		</div>
+	</div>
+</div>
+
+<script>
+	function showModal(modal) { modal.classList.add('show'); }
+	function hideModal(modal) { modal.classList.remove('show'); }
+
+	// CREATE MODAL
+	const createMajorModal = document.getElementById('createMajorModal');
+	const openCreateMajorBtn = document.getElementById('openCreateMajorBtn');
+	const closeCreateMajorModalBtn = document.getElementById('closeCreateMajorModal');
+	const cancelCreateMajorBtn = document.getElementById('cancelCreateMajorBtn');
+
+	openCreateMajorBtn.onclick = () => showModal(createMajorModal);
+	closeCreateMajorModalBtn.onclick = () => hideModal(createMajorModal);
+	cancelCreateMajorBtn.onclick = () => hideModal(createMajorModal);
+
+	// --------- Edit Major Modal logic ----------
+	const editMajorModal = document.getElementById('editMajorModal');
+	const closeEditMajorModalBtn = document.getElementById('closeEditMajorModal');
+	const cancelEditMajorBtn = document.getElementById('cancelEditMajorBtn');
+	const editMajorForm = document.getElementById('editMajorForm');
+	const majorSchoolSelect = document.getElementById('editMajorSchoolId');
+	let currentMajorId = null;
+
+	document.querySelectorAll('.edit-btn').forEach(btn => {
+		btn.addEventListener('click', function () {
+			document.getElementById('editMajorId').value = btn.getAttribute('data-id');
+			document.getElementById('editMajorName').value = btn.getAttribute('data-name');
+			document.getElementById('editMajorDescription').value = btn.getAttribute('data-description');
+			setTimeout(() => {
+				majorSchoolSelect.value = btn.getAttribute('data-schoolid');
+			}, 0);
+			currentMajorId = btn.getAttribute('data-id');
+			showModal(editMajorModal);
+		});
+	});
+
+	closeEditMajorModalBtn.onclick = () => hideModal(editMajorModal);
+	cancelEditMajorBtn.onclick = () => hideModal(editMajorModal);
+
+	document.getElementById('updateMajorBtn').onclick = function() {
+		showConfirmMajorModal("Xác nhận cập nhật", "Bạn có chắc muốn cập nhật ngành học này?", function () {
+			editMajorForm.submit();
+		});
+	};
+
+	// --------- Delete Major Modal logic ----------
+	document.querySelectorAll('.delete-btn').forEach(btn => {
+		btn.addEventListener('click', function () {
+			const majorId = btn.getAttribute('data-id');
+			showConfirmMajorModal("Xác nhận xóa", "Bạn có chắc muốn xóa ngành học này?", function () {
+				const form = document.createElement('form');
+				form.method = "post";
+				form.action = "/admin/majors/delete/" + majorId;
+				document.body.appendChild(form);
+				form.submit();
+			});
+		});
+	});
+
+	// --------- Confirm Modal logic ----------
+	const confirmMajorModal = document.getElementById('confirmMajorModal');
+	const confirmMajorYesBtn = document.getElementById('confirmMajorYesBtn');
+	const confirmMajorNoBtn = document.getElementById('confirmMajorNoBtn');
+	let confirmMajorCallback = null;
+
+	function showConfirmMajorModal(title, message, callback) {
+		document.getElementById('confirmMajorModalTitle').innerText = title;
+		document.getElementById('confirmMajorModalMessage').innerText = message;
+		showModal(confirmMajorModal);
+		confirmMajorCallback = callback;
+	}
+
+	confirmMajorYesBtn.onclick = function () {
+		hideModal(confirmMajorModal);
+		if (typeof confirmMajorCallback === "function") confirmMajorCallback();
+	};
+	confirmMajorNoBtn.onclick = () => hideModal(confirmMajorModal);
+
+	[createMajorModal, editMajorModal, confirmMajorModal].forEach(modal => {
+		modal.addEventListener('click', function (event) {
+			if (event.target === modal) hideModal(modal);
+		});
+	});
+
+	window.addEventListener('keydown', function (event) {
+		if (event.key === "Escape") {
+			hideModal(createMajorModal);
+			hideModal(editMajorModal);
+			hideModal(confirmMajorModal);
+		}
+	});
+</script>
+</body>
+</html>

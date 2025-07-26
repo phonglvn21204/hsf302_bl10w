@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="UTF-8">
+	<title>User Management</title>
+	<link rel="stylesheet" th:href="@{/css/admin.css}">
+</head>
+<body>
+<div class="admin-container">
+	<div th:replace="fragments/sidebar :: adminSidebar"></div>
+	<div class="main-content">
+		<h2>Danh sách người dùng</h2>
+		<div th:if="${error != null}">
+			<p style="color: red" th:text="${error}"></p>
+		</div>
+		<table class="admin-table">
+			<thead>
+			<tr>
+				<th>ID</th>
+				<th>Email</th>
+				<th>Full Name</th>
+				<th>Status</th>
+				<th>Phone</th>
+				<th>Role</th>
+				<th>Created At</th>
+				<th>Actions</th>
+			</tr>
+			</thead>
+			<tbody>
+			<tr th:each="user : ${users}">
+				<td th:text="${user.id}"></td>
+				<td th:text="${user.email}"></td>
+				<td th:text="${user.fullName}"></td>
+				<td th:text="${user.status}"></td>
+				<td th:text="${user.phone}"></td>
+				<td th:text="${user.role}"></td>
+				<td th:text="${#temporals.format(user.createdAt, 'dd/MM/yyyy HH:mm')}"></td>
+				<td>
+					<button type="button" class="edit-btn"
+							th:attr="data-id=${user.id},data-email=${user.email},data-fullname=${user.fullName},data-phone=${user.phone},data-role=${user.role},data-status=${user.status}">
+						Sửa
+					</button>
+					<button type="button" class="delete-btn"
+							th:attr="data-id=${user.id}">
+						Xóa
+					</button>
+				</td>
+			</tr>
+			</tbody>
+		</table>
+	</div>
+</div>
+
+<!-- Edit User Modal -->
+<div id="editUserModal" class="modal">
+	<div class="modal-content">
+		<span class="close" id="closeEditModal">&times;</span>
+		<h3>Cập nhật người dùng</h3>
+		<form id="editUserForm" th:action="@{/admin/users/update}" method="post">
+			<input type="hidden" name="id" id="editUserId"/>
+			<input type="email" name="email" id="editUserEmail" required placeholder="Email"/>
+			<input type="text" name="fullName" id="editUserFullName" required placeholder="Họ tên"/>
+			<input type="text" name="phone" id="editUserPhone" placeholder="Số điện thoại"/>
+			<select name="role" id="editUserRole">
+				<option value="admin">Admin</option>
+				<option value="staff">Staff</option>
+				<option value="customer">Customer</option>
+			</select>
+			<select name="status" id="editUserStatus">
+				<option value="active">Hoạt động</option>
+				<option value="inactive">Vô hiệu hóa</option>
+			</select>
+			<div class="modal-actions">
+				<button type="button" id="updateUserBtn" class="admin-btn add">Cập nhật</button>
+				<button type="button" id="cancelEditBtn" class="admin-btn" style="background:#e2e2e2;color:#444;">Hủy</button>
+			</div>
+		</form>
+	</div>
+</div>
+
+<!-- Confirm Modal -->
+<div id="confirmModal" class="modal">
+	<div class="modal-content confirm-modal-content">
+		<h3 id="confirmModalTitle">Bạn chắc chắn?</h3>
+		<p id="confirmModalMessage"></p>
+		<div class="modal-actions">
+			<button type="button" id="confirmYesBtn" class="delete-btn">Đồng ý</button>
+			<button type="button" id="confirmNoBtn" class="admin-btn" style="background:#e2e2e2;color:#444;">Hủy</button>
+		</div>
+	</div>
+</div>
+
+<script>
+	function showModal(modal) { modal.classList.add('show'); }
+	function hideModal(modal) { modal.classList.remove('show'); }
+
+	const editUserModal = document.getElementById('editUserModal');
+	const closeEditModalBtn = document.getElementById('closeEditModal');
+	const cancelEditBtn = document.getElementById('cancelEditBtn');
+	const editUserForm = document.getElementById('editUserForm');
+	let currentUserId = null;
+
+	document.querySelectorAll('.edit-btn').forEach(btn => {
+		btn.addEventListener('click', function () {
+			document.getElementById('editUserId').value = btn.getAttribute('data-id');
+			document.getElementById('editUserEmail').value = btn.getAttribute('data-email');
+			document.getElementById('editUserFullName').value = btn.getAttribute('data-fullname');
+			document.getElementById('editUserPhone').value = btn.getAttribute('data-phone');
+			document.getElementById('editUserRole').value = btn.getAttribute('data-role');
+			document.getElementById('editUserStatus').value = btn.getAttribute('data-status');
+			currentUserId = btn.getAttribute('data-id');
+			showModal(editUserModal);
+		});
+	});
+
+	closeEditModalBtn.onclick = () => hideModal(editUserModal);
+	cancelEditBtn.onclick = () => hideModal(editUserModal);
+
+	document.getElementById('updateUserBtn').onclick = function() {
+		showConfirmModal("Xác nhận cập nhật", "Bạn có chắc muốn cập nhật người dùng này?", function () {
+			editUserForm.submit();
+		});
+	};
+
+	document.querySelectorAll('.delete-btn').forEach(btn => {
+		btn.addEventListener('click', function () {
+			const userId = btn.getAttribute('data-id');
+			showConfirmModal("Xác nhận xóa", "Bạn có chắc muốn xóa người dùng này?", function () {
+				const form = document.createElement('form');
+				form.method = "post";
+				form.action = "/admin/users/delete/" + userId;
+				document.body.appendChild(form);
+				form.submit();
+			});
+		});
+	});
+
+	const confirmModal = document.getElementById('confirmModal');
+	const confirmYesBtn = document.getElementById('confirmYesBtn');
+	const confirmNoBtn = document.getElementById('confirmNoBtn');
+	let confirmCallback = null;
+
+	function showConfirmModal(title, message, callback) {
+		document.getElementById('confirmModalTitle').innerText = title;
+		document.getElementById('confirmModalMessage').innerText = message;
+		showModal(confirmModal);
+		confirmCallback = callback;
+	}
+
+	confirmYesBtn.onclick = function () {
+		hideModal(confirmModal);
+		if (typeof confirmCallback === "function") confirmCallback();
+	};
+	confirmNoBtn.onclick = () => hideModal(confirmModal);
+
+	[editUserModal, confirmModal].forEach(modal => {
+		modal.addEventListener('click', function (event) {
+			if (event.target === modal) hideModal(modal);
+		});
+	});
+
+	window.addEventListener('keydown', function (event) {
+		if (event.key === "Escape") {
+			hideModal(editUserModal);
+			hideModal(confirmModal);
+		}
+	});
+</script>
+</body>
+</html>

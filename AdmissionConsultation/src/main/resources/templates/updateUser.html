@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="UTF-8">
+	<title>Update User</title>
+</head>
+<body>
+<form th:action="@{/updateUser}" method="Post" th:object="${user}">
+	<label>ID</label>
+	<input type="text" name="id" id="id" th:field="${user.id}" readonly>
+	</br>
+	<label>Email</label>
+	<input type="text" name="email" id="email" th:field="${user.email}" readonly>
+	</br>
+	<label>Full Name</label>
+	<input type="text" name="fullName" id="fullName" th:field="${user.fullName}" required>
+	</br>
+	<label>Phone</label>
+	<input type="text" name="phone" id="phone" th:field="${user.phone}" required>
+	</br>
+	<label>Role</label>
+	<select name="role" id="role" th:field="${user.role}">
+		<option name="admin" id="admin" value="admin">admin</option>
+		<option name="staff" id="staff" value="staff">staff</option>
+		<option name="customer" id="customer" value="customer">customer</option>
+	</select>
+	</br>
+	<label>Status</label>
+	<select name="status" id="status" th:field="${user.status}">
+		<option name="active" id="active" value="active">Active</option>
+		<option name="inactive" id="inactive" value="inactive">Inactive</option>
+	</select>
+	</br>
+	<input type="hidden" name="passwordHash" id="passwordHash" th:field="${user.passwordHash}" readonly>
+	</br>
+
+	<button value="submit">Update</button>
+</form>
+</body>
+</html>

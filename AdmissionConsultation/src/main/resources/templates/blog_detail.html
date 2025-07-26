@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head>
+	<meta charset="UTF-8">
+	<title th:text="${blog.title}">Chi tiết blog</title>
+	<link rel="stylesheet" th:href="@{/css/blog.css}">
+</head>
+<body>
+<div class="blog-detail-container">
+	<h1 th:text="${blog.title}"></h1>
+	<p class="blog-meta">
+		<span th:text="${#temporals.format(blog.createdAt, 'dd/MM/yyyy HH:mm')}"></span>
+	</p>
+	<img th:src="@{${blog.imageUrl}}" alt="Ảnh blog" class="blog-image"/>
+	<div class="blog-content" th:utext="${blog.content}"></div>
+
+	<a th:href="@{/}" class="btn">⬅ Quay lại trang chủ</a>
+</div>
+</body>
+</html>

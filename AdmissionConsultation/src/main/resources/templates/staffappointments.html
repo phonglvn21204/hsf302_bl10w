@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>📅 Lịch hẹn tư vấn</title>
+	<link rel="stylesheet" th:href="@{/css/staff.css}">
+</head>
+<body>
+<div class="staff-container">
+	<!-- Sidebar gọi trực tiếp -->
+	<div th:replace="fragments/sidebar_staff :: staffSidebar"></div>
+
+	<!-- Nội dung chính -->
+	<div class="main-content">
+		<h2>📅 Danh sách lịch hẹn tư vấn</h2>
+		<table>
+			<thead>
+			<tr>
+				<th>ID</th>
+				<th>Khách hàng</th>
+				<th>SĐT</th>
+				<th>Trường</th>
+				<th>Ngành</th>
+				<th>Thời gian tạo</th>
+				<th>Trạng thái</th>
+				<th>Hành động</th>
+			</tr>
+			</thead>
+			<tbody>
+			<tr th:each="appt : ${appointments}">
+				<td th:text="${appt.id}"></td>
+				<td th:text="${appt.customer.fullName}"></td>
+				<td th:text="${appt.customer.phone}"></td>
+				<td th:text="${appt.school.name}"></td>
+				<td th:text="${appt.major.name}"></td>
+				<td th:text="${#temporals.format(appt.createdAt, 'dd/MM/yyyy HH:mm')}"></td>
+				<td th:text="${appt.status}"></td>
+				<td>
+					<form th:action="@{/staff/appointments/update}" method="post">
+						<input type="hidden" name="appointmentId" th:value="${appt.id}"/>
+						<select name="status">
+							<option th:selected="${appt.status == 'pending'}" value="pending">Pending</option>
+							<option th:selected="${appt.status == 'approved'}" value="approved">Approved</option>
+							<option th:selected="${appt.status == 'completed'}" value="completed">Completed</option>
+							<option th:selected="${appt.status == 'rejected'}" value="rejected">Rejected</option>
+						</select>
+						<button type="submit">Cập nhật</button>
+					</form>
+				</td>
+			</tr>
+			</tbody>
+		</table>
+	</div>
+</div>
+</body>
+</html>

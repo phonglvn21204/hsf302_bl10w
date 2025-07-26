@@ -1,0 +1,63 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f8f9fa;
+    margin: 0;
+    padding: 0;
+    color: #333;
+}
+
+.blog-detail-container {
+    max-width: 1000px;
+    margin: 40px auto;
+    background-color: #fff;
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+    font-size: 36px;
+    margin-bottom: 20px;
+    color: #2c3e50;
+}
+
+.blog-meta {
+    font-size: 14px;
+    color: #888;
+    margin-bottom: 30px;
+}
+
+.blog-image {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    margin: 0 auto 30px auto; /* ⬅ canh giữa và tạo khoảng cách dưới */
+    border-radius: 8px;
+}
+
+.blog-content {
+    font-size: 18px;
+    line-height: 1.7;
+}
+
+.blog-content img {
+    max-width: 100%;
+    height: auto;
+    margin: 20px 0;
+    border-radius: 8px;
+}
+
+.btn {
+    display: inline-block;
+    margin-top: 40px;
+    padding: 12px 20px;
+    background-color: #007bff;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 6px;
+    transition: background-color 0.3s;
+}
+
+.btn:hover {
+    background-color: #0056b3;
+}

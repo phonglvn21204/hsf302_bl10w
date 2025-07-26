@@ -1,0 +1,11 @@
+<!-- fragments/sidebar_staff.html -->
+<div th:fragment="staffSidebar">
+	<div class="sidebar">
+		<h2>Staff Panel</h2>
+		<ul>
+			<li><a th:href="@{/staff/appointments}"><strong>Appointment</strong></a></li>
+			<li><a th:href="@{/staff/blogs/list}"><strong>Blog</strong></a></li>
+			<li><a th:href="@{/logout}"><strong>Logout</strong></a></li>
+		</ul>
+	</div>
+</div>

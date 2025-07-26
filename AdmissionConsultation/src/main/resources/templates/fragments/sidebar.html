@@ -1,0 +1,11 @@
+<!-- templates/fragments/sidebar.html -->
+<div class="sidebar" th:fragment="adminSidebar">
+	<h2 class="sidebar-title">Admin Panel</h2>
+	<ul class="sidebar-menu">
+		<li><a th:href="@{/admin/users}">User</a></li>
+		<li><a th:href="@{/admin/universities}">University</a></li>
+		<li><a th:href="@{/admin/majors}">Majors</a></li>
+		<li><a th:href="@{/admin/scholarships}">Scholarships</a></li>
+		<li><a th:href="@{/logout}">Logout</a></li>
+	</ul>
+</div>
